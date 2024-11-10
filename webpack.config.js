@@ -3,6 +3,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+// eslint-disable-next-line
 const isProduction = process.env.NODE_ENV === 'production';
 
 
@@ -49,6 +50,11 @@ const config = {
                     },
                     {
                         loader: 'sass-loader',
+                        options: {
+                            sassOptions: {
+                                quietDeps: true,
+                            },
+                        },
                     },
                     {
                         loader: 'postcss-loader'
@@ -71,6 +77,9 @@ const config = {
             // Add your rules for custom modules here
             // Learn more about loaders from https://webpack.js.org/loaders/
         ],
+    },
+    stats: {
+        warnings: false,
     },
 };
 
