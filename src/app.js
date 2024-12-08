@@ -4,8 +4,11 @@ import axios from 'axios';
 import watch from './view.js';
 import translations from './locales/index.js';
 import getParsingData from './parser.js';
+import { differenceBy } from 'lodash';
 
 const defaultLanguage = 'ru';
+const timeoutOfFetch = 10000;
+const timeoutOfRequest = 3000;
 
 const getLoadingProcessError = (error) => {
   switch (true) {
@@ -31,7 +34,7 @@ const readRss = (watchedState, url) => {
   watchedState.loadingProcess = { status: 'loading', error: null };
 
   return axios
-    .get(addProxy(url))
+    .get(addProxy(url), { timeout: timeoutOfRequest })
     .then((response) => {
       const { title, decsription, items } = getParsingData(response.data.contents);
       
@@ -68,6 +71,30 @@ const validateUrl = (url, feeds) => {
     .catch((error) => error.message);
 };
 
+const fetchNewPosts = (watchedState) => {
+  const promises = watchedState.feeds.map((feed) => axios
+    .get(addProxy(feed.url), { timeoutOfRequest })
+    .then((response) => {
+      const { items: loadedPosts } = getParsingData(response.data.contents);
+      const previousPosts = watchedState.posts.filter((post) => post.channelId === feed.id);
+      const newPosts = differenceBy(loadedPosts, previousPosts, 'title')
+        .map((post) => ({
+          ...post,
+          channelId: feed.id,
+          id: getUniqueId(),
+        }));
+        watchedState.post.unshift(...newPosts);
+    })
+    .catch((err) => {
+      watchedState.loadingProcess = { status: 'failed', err: getLoadingProcessError(err) };
+    })
+  );
+
+  Promise.all(promises).finally(() => {
+    setTimeout(() => fetchNewPosts(watchedState), timeoutOfFetch);
+  });
+};
+
 const app = () => {
   const initialState = {
     form: {
@@ -93,6 +120,9 @@ const app = () => {
     feedback: document.querySelector('.feedback'),
     feedsCards: document.querySelector('.feeds'),
     postsCards: document.querySelector('.posts'),
+    postsTemplate: document.querySelector('#postItem'),
+    feedsTemplate: document.querySelector('#feedItem'),
+    modalTemplate: document.querySelector('#modal'),
   };
 
   const locale = {
@@ -130,6 +160,17 @@ const app = () => {
               watchedState.form = { isValid: false, error: error.key };
             }
           });
+      });
+
+      elements.postsCards.addEventListener('click', (e) => {
+        if ('id' in e.target.dataset) {
+          const { id } = e.target.dataset;
+          watchedState.modal.postId = String(id);
+          watchedState.watchedPosts.add(id);
+        } else {
+          return;
+        }
+        setTimeout(() => fetchNewPosts(watchedState), timeoutOfFetch);
       });
     });
 };
