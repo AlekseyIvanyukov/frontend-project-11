@@ -7,8 +7,8 @@ import getParsingData from './parser.js';
 import { differenceBy } from 'lodash';
 
 const defaultLanguage = 'ru';
-const timeoutOfFetch = 10000;
-const timeoutOfRequest = 3000;
+const timeoutOfFetch = 2000;
+const timeoutOfRequest = 10000;
 
 const getLoadingProcessError = (error) => {
   switch (true) {
