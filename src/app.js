@@ -83,7 +83,7 @@ const fetchNewPosts = (watchedState) => {
           channelId: feed.id,
           id: getUniqueId(),
         }));
-        watchedState.post.unshift(...newPosts);
+        watchedState.posts.unshift(...newPosts);
     })
     .catch((err) => {
       watchedState.loadingProcess = { status: 'failed', err: getLoadingProcessError(err) };
@@ -120,8 +120,8 @@ const app = () => {
     feedback: document.querySelector('.feedback'),
     feedsCards: document.querySelector('.feeds'),
     postsCards: document.querySelector('.posts'),
-    postsTemplate: document.querySelector('#postItem'),
-    feedsTemplate: document.querySelector('#feedItem'),
+    postTemplate: document.querySelector('#postItem'),
+    feedTemplate: document.querySelector('#feedItem'),
     modalTemplate: document.querySelector('#modal'),
   };
 
