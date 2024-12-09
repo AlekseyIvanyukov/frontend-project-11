@@ -60,21 +60,10 @@ const readRss = (watchedState, url) => {
     });
 };
 
-const validateUrl = (url, feeds) => {
-  const feedUrls = feeds.map((feed) => feed.url);
-  const schema = yup.string().url().required();
-
-  return schema
-    .notOneOf(feedUrls)
-    .validate(url)
-    .then(() => null)
-    .catch((error) => error.message);
-};
-
 const fetchNewPosts = (watchedState) => {
   const promises = watchedState.feeds.map((feed) => axios
-    .get(addProxy(feed.url), { timeoutOfRequest })
-    .then((response) => {
+  .get(addProxy(feed.url), { timeoutOfRequest })
+  .then((response) => {
       const { items: loadedPosts } = getParsingData(response.data.contents);
       const previousPosts = watchedState.posts.filter((post) => post.channelId === feed.id);
       const newPosts = differenceBy(loadedPosts, previousPosts, 'title')
@@ -84,18 +73,29 @@ const fetchNewPosts = (watchedState) => {
           id: getUniqueId(),
         }));
         watchedState.posts.unshift(...newPosts);
-    })
-    .catch((err) => {
-      watchedState.loadingProcess = { status: 'failed', err: getLoadingProcessError(err) };
-    })
-  );
+      })
+      .catch((err) => {
+        watchedState.loadingProcess = { status: 'failed', err: getLoadingProcessError(err) };
+      })
+    );
+    
+    Promise.all(promises).finally(() => {
+      setTimeout(() => fetchNewPosts(watchedState), timeoutOfFetch);
+    });
+  };
+  
+  const validateUrl = (url, feeds) => {
+    const feedUrls = feeds.map((feed) => feed.url);
+    const schema = yup.string().url().required();
+  
+    return schema
+      .notOneOf(feedUrls)
+      .validate(url)
+      .then(() => null)
+      .catch((error) => error.message);
+  };
 
-  Promise.all(promises).finally(() => {
-    setTimeout(() => fetchNewPosts(watchedState), timeoutOfFetch);
-  });
-};
-
-const app = () => {
+  const app = () => {
   const initialState = {
     form: {
       isValid: false,

@@ -118,6 +118,24 @@ export default (elements, state, i18n) => {
     postsCards.appendChild(postsFragment);
   };
 
+  const handleModal = (state) => {
+    const { modalTemplate } = elements;
+    const { posts, modal } = state;
+
+    const post = find(posts, { id: modal.postId });
+    const title = modalTemplate.querySelector('.modal-title');
+    title.textContent = post.title;
+    const body = modalTemplate.querySelector('.modal-body');
+    body.textContent = post.description;
+
+    const readButton = modalTemplate.querySelector('[data-action="readFull"]');
+    readButton.textContent = i18n.t('readFull');
+    readButton.href = post.link;
+
+    const closeButton = modalTemplate.querySelector('[data-action="close"]');
+    closeButton.textContent = i18n.t('close');
+  };
+
   const handlers = {
     form: handleForm,
     loadingProcess: handleLoadingProcess,
@@ -133,25 +151,7 @@ export default (elements, state, i18n) => {
       handler(state);
     }
   });
-
-  const handleModal = (state) => {
-    const { modalTemplate } = elements;
-    const {posts, modal } = state;
-
-    const post = find(posts, { id: modal.PostId });
-    const title = modalTemplate.querySelector('.modal-title');
-    title.textContent = post.title;
-    const body = modalTemplate.querySelector('.modal-body');
-    body.textContent = post.description;
-
-    const readButton = modalTemplate.querySelector('[data-action="readFull"]');
-    readButton.textContent = i18n.t('readFull');
-    readButton.href = post.link;
-
-    const closeButton = modalTemplate.querySelector('[data-action="close"]');
-    closeButton.textContent = i18n.t('close');
-  };
-
+  
   return watchedState;
 
 };
