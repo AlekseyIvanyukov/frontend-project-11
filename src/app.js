@@ -16,6 +16,8 @@ const getLoadingProcessError = (error) => {
       return 'notRSS';
     case error.isAxiosError:
       return 'network';
+    case error.isAxiosError && error.message.includes('timeout'):
+      return 'timeout';
     default:
       return 'unknown';
   }
@@ -84,7 +86,7 @@ const fetchNewPosts = (watchedState) => {
     });
   };
   
-  const validateUrl = (url, feeds) => {
+const validateUrl = (url, feeds) => {
     const feedUrls = feeds.map((feed) => feed.url);
     const schema = yup.string().url().required();
   
@@ -95,7 +97,7 @@ const fetchNewPosts = (watchedState) => {
       .catch((error) => error.message);
   };
 
-  const app = () => {
+const app = () => {
   const initialState = {
     form: {
       isValid: false,
@@ -145,8 +147,9 @@ const fetchNewPosts = (watchedState) => {
     .then(() => {
       yup.setLocale(locale);
       const watchedState = watch(elements, initialState, i18n);
+      setTimeout(() => fetchNewPosts(watchedState), TIMEOUT_OF_FETCH);
 
-      elements.form.addEventListener('submit', (e) => {
+      elements?.form?.addEventListener('submit', (e) => {
         e.preventDefault();
         const data = new FormData(e.target);
         const url = data.get('rss');
@@ -162,7 +165,7 @@ const fetchNewPosts = (watchedState) => {
           });
       });
 
-      elements.postsCards.addEventListener('click', (e) => {
+      elements?.postsCards?.addEventListener('click', (e) => {
         if ('id' in e.target.dataset) {
           const { id } = e.target.dataset;
           watchedState.modal.postId = String(id);
@@ -170,7 +173,6 @@ const fetchNewPosts = (watchedState) => {
         } else {
           return;
         }
-        setTimeout(() => fetchNewPosts(watchedState), TIMEOUT_OF_FETCH);
       });
     });
 };
