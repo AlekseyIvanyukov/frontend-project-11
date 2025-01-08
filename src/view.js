@@ -137,10 +137,10 @@ export default (elements, state, i18n) => {
   };
 
   const handlers = {
-    form: handleForm,
-    loadingProcess: handleLoadingProcess,
-    feeds: handleFeeds,
-    posts: handlePosts,
+    'form': handleForm,
+    'loadingProcess': handleLoadingProcess,
+    'feeds': handleFeeds,
+    'posts': handlePosts,
     'modal.postId': handleModal,
     'ui.watchedPosts': handlePosts,
   };
@@ -153,5 +153,4 @@ export default (elements, state, i18n) => {
   });
   
   return watchedState;
-
 };
