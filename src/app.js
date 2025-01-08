@@ -7,8 +7,8 @@ import getParsingData from './parser.js';
 import { differenceBy } from 'lodash';
 
 const defaultLanguage = 'ru';
-const timeoutOfFetch = 5000;
-const timeoutOfRequest = 5000;
+const TIMEOUT_OF_FETCH = 5000;
+const TIMEOUT_OF_REQUEST = 5000;
 
 const getLoadingProcessError = (error) => {
   switch (true) {
@@ -34,7 +34,7 @@ const readRss = (watchedState, url) => {
   watchedState.loadingProcess = { status: 'loading', error: null };
 
   return axios
-    .get(addProxy(url), { timeout: timeoutOfRequest })
+    .get(addProxy(url), { timeout: TIMEOUT_OF_REQUEST })
     .then((response) => {
       const { title, decsription, items } = getParsingData(response.data.contents);
       
@@ -62,7 +62,7 @@ const readRss = (watchedState, url) => {
 
 const fetchNewPosts = (watchedState) => {
   const promises = watchedState.feeds.map((feed) => axios
-  .get(addProxy(feed.url), { timeoutOfRequest })
+  .get(addProxy(feed.url), { timeout: TIMEOUT_OF_REQUEST })
   .then((response) => {
       const { items: loadedPosts } = getParsingData(response.data.contents);
       const previousPosts = watchedState.posts.filter((post) => post.channelId === feed.id);
@@ -80,7 +80,7 @@ const fetchNewPosts = (watchedState) => {
     );
     
     Promise.all(promises).finally(() => {
-      setTimeout(() => fetchNewPosts(watchedState), timeoutOfFetch);
+      setTimeout(() => fetchNewPosts(watchedState), TIMEOUT_OF_FETCH);
     });
   };
   
@@ -170,7 +170,7 @@ const fetchNewPosts = (watchedState) => {
         } else {
           return;
         }
-        setTimeout(() => fetchNewPosts(watchedState), timeoutOfFetch);
+        setTimeout(() => fetchNewPosts(watchedState), TIMEOUT_OF_FETCH);
       });
     });
 };
