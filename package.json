@@ -35,13 +35,12 @@
     "eslint-plugin-import": "^2.30.0",
     "html-webpack-plugin": "^5.6.0",
     "postcss-loader": "^8.1.1",
-    "sass": "^1.79.4",
-    "sass-loader": "^16.0.1",
-    "sass-migrator": "^2.3.0",
+    "sass": "^1.83.1",
+    "sass-loader": "^16.0.4",
     "style-loader": "^4.0.0",
-    "webpack": "^5.94.0",
+    "webpack": "^5.97.1",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.1.0"
+    "webpack-dev-server": "^5.2.0"
   },
   "dependencies": {
     "axios": "^1.7.7",
