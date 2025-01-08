@@ -147,24 +147,23 @@ const app = () => {
     .then(() => {
       yup.setLocale(locale);
       const watchedState = watch(elements, initialState, i18n);
-      setTimeout(() => fetchNewPosts(watchedState), TIMEOUT_OF_FETCH);
-
+      
       elements?.form?.addEventListener('submit', (e) => {
         e.preventDefault();
         const data = new FormData(e.target);
         const url = data.get('rss');
-
+        
         validateUrl(url, watchedState.feeds)
-          .then((error) => {
-            if (!error) {
-              watchedState.form = { isValid: true, error: null };
-               readRss(watchedState, url);
-            } else {
-              watchedState.form = { isValid: false, error: error.key };
-            }
-          });
+        .then((error) => {
+          if (!error) {
+            watchedState.form = { isValid: true, error: null };
+            readRss(watchedState, url);
+          } else {
+            watchedState.form = { isValid: false, error: error.key };
+          }
+        });
       });
-
+      
       elements?.postsCards?.addEventListener('click', (e) => {
         if ('id' in e.target.dataset) {
           const { id } = e.target.dataset;
@@ -174,6 +173,7 @@ const app = () => {
           return;
         }
       });
+      setTimeout(() => fetchNewPosts(watchedState), TIMEOUT_OF_FETCH);
     });
 };
 
