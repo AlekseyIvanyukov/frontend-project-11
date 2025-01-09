@@ -38,13 +38,13 @@ const readRss = (watchedState, url) => {
   return axios
     .get(addProxy(url), { timeout: TIMEOUT_OF_REQUEST })
     .then((response) => {
-      const { title, decsription, items } = getParsingData(response.data.contents);
+      const { title, description, items } = getParsingData(response.data.contents);
       
       const feed = {
         id: getUniqueId(), 
         url,
         title,
-        decsription,
+        description,
       };
 
       const posts = items.map((item) => ({
